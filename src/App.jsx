@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Wallet, TrendingUp, TrendingDown, Plus, Trash2, CreditCard, Banknote } from 'lucide-react';
 
 function App() {
-  const [transactions, setTransactions] = useState([
-    { id: 1, text: 'Lương tháng 5', amount: 15000000, type: 'income', method: 'transfer' },
-    { id: 2, text: 'Ăn trưa cơm bình dân', amount: -35000, type: 'expense', method: 'cash' },
-    { id: 3, text: 'Đổ xăng', amount: -60000, type: 'expense', method: 'cash' },
-    { id: 4, text: 'Cà phê', amount: -25000, type: 'expense', method: 'transfer' },
-  ]);
+  // 1. Khởi tạo state từ Local Storage thay vì dùng mảng fix cứng
+  const [transactions, setTransactions] = useState(() => {
+    const savedTransactions = localStorage.getItem('app_chi_tieu_data');
+    if (savedTransactions) {
+      return JSON.parse(savedTransactions);
+    }
+    return []; // Trả về mảng rỗng nếu là lần đầu tiên sử dụng web
+  });
 
   const [text, setText] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('expense');
   const [method, setMethod] = useState('transfer');
+
+  // 2. Tự động lưu vào Local Storage mỗi khi mảng transactions thay đổi
+  useEffect(() => {
+    localStorage.setItem('app_chi_tieu_data', JSON.stringify(transactions));
+  }, [transactions]);
 
   // Tính toán số dư tổng quan
   const amounts = transactions.map(t => t.amount);
